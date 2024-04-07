@@ -43,6 +43,7 @@ import com.craftmend.openaudiomc.spigot.OpenAudioMcSpigot;
 import com.craftmend.openaudiomc.spigot.modules.proxy.enums.OAClientMode;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -83,7 +84,11 @@ public class ClientConnection implements Authenticatable, Client, Serializable,
         if (OpenAudioMc.getInstance().getConfiguration().getBoolean(StorageKey.SETTINGS_SEND_URL_ON_JOIN))
             OpenAudioMc.resolveDependency(TaskService.class).schduleSyncDelayedTask(() -> {
                 if (!isConnected()) {
-                    this.getAuth().publishSessionUrl();
+                    // TAG DE REFUS DE MSG À LA CONNEXION : "oa_no_notif"
+                    if(Bukkit.getPlayer(this.user.getUniqueId()).isOnline() && !Bukkit.getPlayer(this.user.getUniqueId()).getScoreboardTags().contains("oa_no_notif")) {
+                        this.getAuth().publishSessionUrl();
+                    }
+
                 }
             }, 20 * StorageKey.SETTINGS_SEND_URL_ON_JOIN_DELAY.getInt());
         if (!OpenAudioMc.getInstance().getInvoker().isNodeServer()) {
