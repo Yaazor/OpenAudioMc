@@ -20,6 +20,8 @@ import com.craftmend.openaudiomc.generic.service.Service;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
 import com.craftmend.openaudiomc.generic.storage.interfaces.Configuration;
 import com.craftmend.openaudiomc.generic.user.User;
+import com.craftmend.openaudiomc.spigot.modules.commands.subcommands.audio.DisableSubCommand;
+import com.craftmend.openaudiomc.spigot.modules.commands.subcommands.audio.EnableSubCommand;
 import lombok.Getter;
 
 import java.util.*;
@@ -57,6 +59,12 @@ public class CommandService extends Service {
                 new PlaySubCommand(),
                 new PreloadSubCommand(),
                 new SetKvSubCommand()
+        );
+
+        registerSubCommands(
+                CommandContext.AUDIO,
+                new EnableSubCommand(),
+                new DisableSubCommand()
         );
 
         // add accept sub command if the player is new

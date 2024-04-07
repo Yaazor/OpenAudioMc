@@ -22,6 +22,7 @@ public class CommandSenderUserAdapter implements User<CommandSender> {
         }
     }
 
+
     @Override
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         if (sender instanceof Player) {

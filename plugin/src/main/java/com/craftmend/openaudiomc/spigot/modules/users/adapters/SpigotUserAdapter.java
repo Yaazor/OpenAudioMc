@@ -3,6 +3,8 @@ package com.craftmend.openaudiomc.spigot.modules.users.adapters;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
 import com.craftmend.openaudiomc.generic.user.User;
 import lombok.AllArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -40,6 +42,12 @@ public class SpigotUserAdapter implements User<CommandSender> {
     @Override
     public void sendMessage(TextComponent textComponent) {
         player.spigot().sendMessage(textComponent);
+    }
+
+    public void sendMessage(Component comp) {
+        if(player instanceof Player) {
+            player.sendMessage(comp);
+        }
     }
 
     @Override

@@ -72,6 +72,8 @@ public class ClientAuth implements Serializable {
             client.getUser().sendMessage(translateColors(
                     StorageKey.MESSAGE_CLIENT_ALREADY_CONNECTED.getString()
             ));
+
+
             return;
         }
 

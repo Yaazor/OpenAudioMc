@@ -5,6 +5,7 @@ import com.craftmend.openaudiomc.api.basic.Actor;
 import com.craftmend.openaudiomc.api.clients.Client;
 import com.craftmend.openaudiomc.generic.networking.interfaces.NetworkingService;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.Optional;
@@ -24,6 +25,7 @@ public interface User<T> extends Actor {
 
     // todo: this can be private where needed, should not be inherited
     void sendMessage(TextComponent textComponent);
+
 
     void sendClickableCommandMessage(String message, String hoverMessage, String command);
     void sendClickableUrlMessage(String message, String hoverMessage, String url);
