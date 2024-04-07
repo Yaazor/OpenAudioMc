@@ -6,6 +6,8 @@ import com.craftmend.openaudiomc.generic.commands.selectors.SelectorTranslator;
 import com.craftmend.openaudiomc.spigot.modules.players.objects.SpigotPlayerSelector;
 import com.craftmend.openaudiomc.velocity.modules.player.objects.VelocityPlayerSelector;
 import com.craftmend.openaudiomc.velocity.utils.VelocityChatColor;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public enum Platform {
 
@@ -27,6 +29,11 @@ public enum Platform {
             default:
                 return input; // unknown platform
         }
+    }
+
+    public static TextComponent formatMessage(String input) {
+        MiniMessage mm = MiniMessage.miniMessage();
+        return (TextComponent) mm.deserialize(input);
     }
 
     public static SelectorTranslator<?> getSelectorTranslator() {

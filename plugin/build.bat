@@ -1,1 +1,2 @@
-mvn clean install -DskipTests
+CALL mvn clean install -DskipTests
+pause

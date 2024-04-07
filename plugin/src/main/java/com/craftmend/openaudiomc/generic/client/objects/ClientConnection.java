@@ -76,6 +76,7 @@ public class ClientConnection implements Authenticatable, Client, Serializable,
         rtcSessionManager = new RtcSessionManager(this);
         session = new SessionData(this);
 
+
         if (fromSerialized != null) {
             this.session.applySerializedSession(fromSerialized);
         }

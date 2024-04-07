@@ -2,6 +2,7 @@ package com.craftmend.openaudiomc.spigot.modules.show.interfaces;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 public class FakeCommandSender implements CommandSender {
@@ -26,6 +28,16 @@ public class FakeCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(@NotNull String[] messages) {
+
+    }
+
+    @Override
+    public void sendMessage(@Nullable UUID sender, @NotNull String message) {
+
+    }
+
+    @Override
+    public void sendMessage(@Nullable UUID sender, @NotNull String... messages) {
 
     }
 
@@ -44,6 +56,11 @@ public class FakeCommandSender implements CommandSender {
     @NotNull
     @Override
     public Spigot spigot() {
+        return null;
+    }
+
+    @Override
+    public @NotNull Component name() {
         return null;
     }
 

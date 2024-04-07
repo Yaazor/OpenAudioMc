@@ -3,7 +3,8 @@ package com.craftmend.openaudiomc.generic.commands.enums;
 public enum CommandContext {
 
     OPENAUDIOMC,
-    CHANNEL;
+    CHANNEL,
+    AUDIO;
 
     private String baseCommand;
 
