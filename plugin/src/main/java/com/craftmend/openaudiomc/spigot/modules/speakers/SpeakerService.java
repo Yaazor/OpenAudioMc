@@ -162,6 +162,10 @@ public class SpeakerService extends Service {
         return speakerMap.get(location);
     }
 
+    public boolean hasSpeaker(MappedLocation location) {
+        return speakerMap.containsKey(location);
+    }
+
     public SpeakerMedia getMedia(String source) {
         if (speakerMediaMap.containsKey(source)) return speakerMediaMap.get(source);
         SpeakerMedia speakerMedia = new SpeakerMedia(source);
