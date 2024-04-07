@@ -26,7 +26,7 @@ public class SpeakerSelectListener implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         if (OpenAudioMc.getService(ServerService.class).getVersion() == ServerVersion.MODERN && event.getHand() != EquipmentSlot.HAND) return;
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking()) {
             if (isAllowed(event.getPlayer())) {
                 Speaker speaker = speakerService.getSpeaker(new MappedLocation(event.getClickedBlock().getLocation()));
                 if (speaker == null) {

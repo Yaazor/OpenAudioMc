@@ -72,7 +72,7 @@ public class SpeakersSubCommand extends SubCommand {
             return;
         }
 
-        if (args.length == 1 || args.length == 2) {
+        if ((args.length == 1 || args.length == 2) && !args[0].equalsIgnoreCase("remove")) {
             delegateTo("give", sender, args);
             return;
         }
@@ -82,7 +82,7 @@ public class SpeakersSubCommand extends SubCommand {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("remove") && args.length == 5) {
+        if (args[0].equalsIgnoreCase("remove") && (args.length == 2 || args.length == 5)) {
             delegateTo("remove", sender, args);
             return;
         }
