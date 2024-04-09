@@ -29,10 +29,10 @@ public class SpeakerDestroyListener implements Listener {
                 MappedLocation location = new MappedLocation(broken.getLocation());
                 Speaker speaker = speakerService.getSpeaker(location);
                 if (speaker != null) {
-                    broken.getWorld().dropItem(
+                    /*broken.getWorld().dropItem(
                             broken.getLocation(),
                             SpeakerUtils.getSkull(speaker.getSource(), speaker.getRadius())
-                    );
+                    );*/
                 }
             }
         }
@@ -43,7 +43,6 @@ public class SpeakerDestroyListener implements Listener {
         Block broken = event.getBlock();
         if (SpeakerUtils.isSpeakerSkull(broken)) {
             if (!isAllowed(event.getPlayer())) {
-                event.getPlayer().sendMessage(MagicValue.COMMAND_PREFIX.get(String.class) + "You are not allowed to break OpenAudioMc speakers, please ask the server administrator for more information.");
                 event.setCancelled(true);
                 return;
             }
@@ -59,10 +58,7 @@ public class SpeakerDestroyListener implements Listener {
 
             event.getPlayer().sendMessage(MagicValue.COMMAND_PREFIX.get(String.class) + ChatColor.RED + "Speaker destroyed");
 
-            event.getBlock().getWorld().dropItem(
-                    event.getBlock().getLocation(),
-                    SpeakerUtils.getSkull(speaker.getSource(), speaker.getRadius())
-            );
+            event.getPlayer().getInventory().addItem(SpeakerUtils.getSkull(speaker.getSource(), speaker.getRadius()));
 
             try {
                 event.setDropItems(false);
