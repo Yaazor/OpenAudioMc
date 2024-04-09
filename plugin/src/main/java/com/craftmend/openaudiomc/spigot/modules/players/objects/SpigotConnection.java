@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
@@ -98,7 +99,8 @@ public class SpigotConnection {
         });
 
         // the feeder, how the data watcher gets its new fed data
-        locationDataWatcher.setFeeder(player::getLocation);
+
+        locationDataWatcher.setFeeder(() -> player.getLocation());
 
         // set handlers
         clientConnection.addOnConnectHandler(() -> {
