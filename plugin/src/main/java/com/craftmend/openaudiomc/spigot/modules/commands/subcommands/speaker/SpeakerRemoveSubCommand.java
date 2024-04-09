@@ -28,7 +28,6 @@ public class SpeakerRemoveSubCommand extends SubCommand {
     public void onExecute(User sender, String[] args) {
         MappedLocation mappedLocation = speakersSubCommand.locationFromArguments(args);
         if (mappedLocation == null) {
-            sender.sendMessage(""+args.length);
             // failed to parse location
             // On verif si le joueur a essayé de mettre un rayon
             if(args.length == 2) {
@@ -51,10 +50,13 @@ public class SpeakerRemoveSubCommand extends SubCommand {
                         }
                         return;
                     }else{
-                        sender.sendMessage("Le rayon spécifié est trop élevé. (Max: 20)");
+                        message(sender, "Le rayon spécifié est trop élevé. (Max: 20)");
+                        return;
                     }
                 }catch (Exception e) {
                     sender.sendMessage("Rayon invalide.");
+                    message(sender, "Rayon invalide.");
+                    return;
                 }
             }
 
