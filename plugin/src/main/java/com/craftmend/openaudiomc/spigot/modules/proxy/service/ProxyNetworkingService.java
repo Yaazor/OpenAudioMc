@@ -17,6 +17,7 @@ import com.craftmend.openaudiomc.spigot.modules.proxy.listeners.BukkitPacketList
 
 import com.craftmend.openaudiomc.generic.proxy.messages.implementations.BukkitPacketManager;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -52,6 +53,8 @@ public class ProxyNetworkingService extends NetworkingService {
 
     @Override
     public void send(Authenticatable client, AbstractPacket packet) {
+        for (INetworkingEvents event : getEvents()) event.onPacketSend(client, packet);
+
         // handle packet if it should be passed to bungee
         // forward every packet starting with PacketClient
         if (!(client instanceof ClientConnection))

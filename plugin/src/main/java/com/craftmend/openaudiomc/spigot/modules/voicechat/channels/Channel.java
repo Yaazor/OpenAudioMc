@@ -1,7 +1,14 @@
 package com.craftmend.openaudiomc.spigot.modules.voicechat.channels;
 
+import com.craftmend.openaudiomc.api.EventApi;
 import com.craftmend.openaudiomc.api.VoiceApi;
+import com.craftmend.openaudiomc.api.basic.Actor;
+import com.craftmend.openaudiomc.api.channels.ChannelJoinResponse;
+import com.craftmend.openaudiomc.api.channels.VoiceChannel;
+import com.craftmend.openaudiomc.api.channels.events.ChannelMembersUpdatedEvent;
+import com.craftmend.openaudiomc.api.clients.Client;
 import com.craftmend.openaudiomc.generic.client.objects.ClientConnection;
+import com.craftmend.openaudiomc.generic.networking.packets.client.voice.channels.PacketClientChannelStatusPacket;
 import com.craftmend.openaudiomc.generic.platform.Platform;
 import com.craftmend.openaudiomc.generic.storage.enums.StorageKey;
 import com.craftmend.openaudiomc.generic.user.User;
@@ -9,12 +16,9 @@ import com.craftmend.openaudiomc.spigot.modules.voicechat.VoiceChannelService;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class Channel {
+public class Channel implements VoiceChannel {
 
     @Nullable
     @Getter private User creator;
@@ -39,7 +43,7 @@ public class Channel {
         type = permission != null ? ChannelType.STATIC_CHANNEL_LOCKED : ChannelType.STATIC_CHANNEL;
     }
 
-    public ChannelEnterResponse attemptEnter(User member) {
+    public ChannelEnterResponse attemptEnter(User<?> member) {
         // admin check
         if (member.hasPermission("openaudiomc.channel.force-join") || member.isAdministrator()) {
             return ChannelEnterResponse.OK;
@@ -90,6 +94,9 @@ public class Channel {
             if (member.getUser().getUniqueId().equals(user.getUniqueId())) continue;
             VoiceApi.getInstance().addStaticPeer(member, client, true, true);
         }
+
+        EventApi.getInstance().callEvent(new ChannelMembersUpdatedEvent(this));
+        client.sendPacket(new PacketClientChannelStatusPacket(getName()));
     }
 
     public void removeMember(User user) {
@@ -105,7 +112,13 @@ public class Channel {
             VoiceApi.getInstance().removeStaticPeer(member, client, true);
         }
 
+        client.sendPacket(new PacketClientChannelStatusPacket(null));
+        EventApi.getInstance().callEvent(new ChannelMembersUpdatedEvent(this));
         checkAbandonment();
+    }
+
+    public boolean isMember(UUID uuid) {
+        return members.containsKey(uuid);
     }
 
     private void checkAbandonment() {
@@ -128,7 +141,38 @@ public class Channel {
         members.clear();
     }
 
-    public Collection<ClientConnection> getMembers() {
-        return members.values();
+    public Collection<Client> getMembers() {
+        return new ArrayList<>(members.values());
+    }
+
+    @Override
+    public boolean requiresPermission() {
+        return requiredPermission != null;
+    }
+
+    @Nullable
+    @Override
+    public String getRequiredPermission() {
+        return requiredPermission;
+    }
+
+    @Override
+    public boolean isMember(Actor actor) {
+        return members.containsKey(actor.getUniqueId());
+    }
+
+    @Override
+    public ChannelJoinResponse joinPreconditionCheck(Client client) {
+        return attemptEnter(((ClientConnection) client).getUser()).getApiValue();
+    }
+
+    @Override
+    public void addMember(Client client) {
+        addMember(((ClientConnection) client).getUser());
+    }
+
+    @Override
+    public void removeMember(Client client) {
+        removeMember(((ClientConnection) client).getUser());
     }
 }

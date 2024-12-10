@@ -30,8 +30,9 @@ export async function handleCreateMedia(data) {
   MediaManager.destroySounds(id, false, true);
 
   // register with metadata
-  const createdChannel = new Channel(id);
+  const createdChannel = new Channel(id, volume);
   createdChannel.trackable = true;
+  createdChannel.setPrefferedFadeTime(fadeTime);
   const createdMedia = new Sound();
 
   createdChannel.addSound(createdMedia);
@@ -64,9 +65,12 @@ export async function handleCreateMedia(data) {
 
   createdChannel.setTag(flag);
 
+  MediaManager.mixer.tick();
+
   // load file and play
   await createdMedia.load(source);
   createdChannel.setChannelVolume(0);
+  createdChannel.originalVolume = volume;
   createdMedia.setLooping(looping);
   createdMedia.setStartAt(startAt);
   // convert distance
@@ -80,7 +84,13 @@ export async function handleCreateMedia(data) {
   } else {
     // default sound, just play
     createdChannel.setTag('DEFAULT');
+
     createdMedia.whenInitialized(() => {
+      // are we not already nicked from the start?
+      if (createdChannel.mutedByScore) {
+        return;
+      }
+
       if (fadeTime === 0) {
         createdChannel.setChannelVolume(volume);
         createdChannel.updateFromMasterVolume();

@@ -107,6 +107,11 @@ export const MessageModule = new class MessageModule {
         name: 'Svenska',
         visible: true,
       }, // Swedish
+      th: {
+        file: 'th.lang',
+        name: 'ภาษาไทย',
+        visible: true,
+      }, // Thai
 
       // One of these can probably go, but i wasn't provided
       // enough info and am unable to find the correct region code
@@ -124,6 +129,16 @@ export const MessageModule = new class MessageModule {
       pl: {
         file: 'pl.lang',
         name: 'Polski',
+        visible: true,
+      },
+      it: {
+        file: 'it.lang',
+        name: 'Italiano',
+        visible: true,
+      },
+      cs: {
+        file: 'cs.lang',
+        name: 'Čeština',
         visible: true,
       },
     };
@@ -256,13 +271,13 @@ export const MessageModule = new class MessageModule {
       if (value !== '') {
         // complete set
         this.messages[key] = value;
-        const payload = {
-          key,
-          value,
-        };
-        store.dispatch({ type: 'SET_LANG_MESSAGE', payload });
       }
     }
+
+    const payload = {
+      messages: this.messages,
+    };
+    store.dispatch({ type: 'SET_LANG_MESSAGES', payload });
 
     this.currentLangKey = langMapKey;
     setGlobalState({ langName: langMapKey });

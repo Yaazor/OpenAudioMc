@@ -1,9 +1,13 @@
 package com.craftmend.openaudiomc.api;
 
+import com.craftmend.openaudiomc.api.channels.VoiceChannel;
 import com.craftmend.openaudiomc.api.clients.Client;
 import com.craftmend.openaudiomc.api.voice.CustomPlayerFilter;
+import com.craftmend.openaudiomc.api.voice.DisplayOverride;
 import com.craftmend.openaudiomc.api.voice.VoicePeerOptions;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,6 +69,19 @@ public interface VoiceApi {
     void addStaticPeer(Client client, Client peerToAdd, boolean visible, boolean mutual);
 
     /**
+     * Add a peer (partner) to someone's voice chat.
+     * This would let the client hear the peerToAdd as a global voice (without spatial audio/distance) until it's removed.
+     *
+     * @param client          The web client that should receive this update
+     * @param peerToAdd       The peer that should be added
+     * @param visible         Whether the peer should be visible in the client
+     * @param mutual          Whether the peer should also hear the client (repeat the call for mutual)
+     * @param displayOverride A display override, which can be used to change the display name and skin of a player in the voice chat system.
+     * @since 6.10.2
+     */
+    void addStaticPeer(Client client, Client peerToAdd, boolean visible, boolean mutual, DisplayOverride displayOverride);
+
+    /**
      * Remove a global peer from someone's voice chat.
      * This would remove a static peer if they have been added through addStaticPeer, but not
      * if they have been added through the regular voice-chat system.
@@ -104,5 +121,48 @@ public interface VoiceApi {
      * @author DiamondDagger590
      */
     List<CustomPlayerFilter> getCustomPlayerFilters();
+
+    /**
+     * Get a list of all registered channels
+     * @return a list of all registered channels
+     * @since 6.10.1
+     */
+    Collection<VoiceChannel> getChannels();
+
+    /**
+     * Get a channel by its name
+     * @param name the name of the channel
+     * @return the channel, or null if the channel does not exist
+     * @since 6.10.1
+     */
+    @Nullable
+    VoiceChannel getChannel(String name);
+
+    /**
+     * Create a new channel
+     * @param name the name of the channel
+     * @param creator the creator of the channel
+     * @param requiresPermission if the channel requires permission to join
+     * @param requiredPermission the permission required to join the channel
+     * @return the created channel
+     * @since 6.10.1
+     */
+    VoiceChannel createChannel(String name, Client creator, boolean requiresPermission, @Nullable String requiredPermission);
+
+    /**
+     * Delete a channel
+     * @param channel the channel to delete
+     * @since 6.10.1
+     */
+    void deleteChannel(VoiceChannel channel);
+
+    /**
+     * Check if a channel name is valid
+     * @param s the name to check
+     * @return true if the name is valid
+     * @since 6.10.1
+     */
+    boolean isChannelNameValid(String s);
+
 
 }

@@ -109,7 +109,7 @@ export const VoiceModule = new class IVoiceModule {
       }
 
       // hide error popup
-      setGlobalState({ loadingOverlay: { visible: false } });
+      setGlobalState({ voiceState: { loading: false, failedGeneric: true, failedErrorContext: 'Failed to request microphone' } });
 
       let stringifiedError = '<unknown>';
       // is it just a string?
@@ -127,10 +127,10 @@ export const VoiceModule = new class IVoiceModule {
 
   panic(message = 'unknown', source = null) {
     setGlobalState({
-      loadingOverlay: {
-        visible: false,
-      },
       voiceState: {
+        loading: false,
+        failedGeneric: true,
+        failedErrorContext: message,
         enabled: false,
       },
     });
@@ -167,12 +167,17 @@ export const VoiceModule = new class IVoiceModule {
 
   showLoadingPopup() {
     setGlobalState({
-      loadingOverlay: {
-        visible: true,
-        title: getTranslation(null, 'vc.startingPopupTitle'),
-        message: getTranslation(null, 'vc.startingPopup'),
+      voiceState: {
+        loading: true,
       },
     });
+  }
+
+  restartVoiceChat() {
+    const currentPreferredMic = getGlobalState().settings.preferredMicId;
+    if (currentPreferredMic && this.isReady()) {
+      this.changeInput(currentPreferredMic);
+    }
   }
 
   pushSocketEvent(event) {
@@ -188,12 +193,8 @@ export const VoiceModule = new class IVoiceModule {
     SocketManager.send(PluginChannel.RTC_READY, { enabled: false });
 
     setGlobalState({
-      loadingOverlay: {
-        visible: true,
-        title: getTranslation(null, 'vc.updatingMicPopupTitle'),
-        message: getTranslation(null, 'vc.updatingMicPopup'),
-      },
       voiceState: {
+        loading: true,
         peers: [],
       },
     });

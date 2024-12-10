@@ -59,8 +59,8 @@ const initialState = {
     voicechatChimesEnabled: true,
     interpolationEnabled: true,
     spatialRenderingMode: 'new',
-    rolloffFactor: 0.5,
-    distanceModel: 'exponential',
+    rolloffFactor: 1,
+    distanceModel: 'linear',
 
     preferredMicId: 'default',
 
@@ -85,7 +85,15 @@ const initialState = {
     link: 'https://soundcloud.com/cool-songs/cool-song-song',
   },
 
+  voiceChannels: {
+    channels: { }, // name:{name, firstMembers: [], otherMembers: int}
+    activeChannelId: null,
+  },
+
   voiceState: {
+    loading: false,
+    failedGeneric: false,
+    failedErrorContext: 'No error context provided',
     autoJoinVoiceChat: false,
     serverHasVoiceChat: false,
     peersHidden: false,
@@ -103,7 +111,8 @@ const initialState = {
     streamKey: null,
     radius: 25,
     mics: [], // cached list of microphones
-    peers: {}, // set of peers, mapped by stream key, {name, uuid, speaking, muted, loading}
+    peers: {
+    }, // set of peers, mapped by stream key, {name, uuid, speaking, muted, loading}
   },
 
   build: {
@@ -122,6 +131,7 @@ const initialState = {
   isLoading: true,
   isBlocked: false, // whenever an account is temporarily blocked (rate-limiting, abuse)
   isPersonalBlock: false, // whenever this user is personally rate-limited or blocked (due to for example, dmca abuse)
+  isValidationError: false, // whenever the client is not whitelisted to be used on this server
   loadingState: 'Preparing to load OpenAudioMc',
   fixedFooter: null,
   navbarDetails: true,
@@ -133,6 +143,56 @@ const initialState = {
 
   renderId: 0, // used to force a re-render
 };
+
+// Action Types
+const VOICE_CHANNEL_ALL = 'VOICE_CHANNEL_ALL';
+const VOICE_CHANNEL_ADD = 'VOICE_CHANNEL_ADD';
+const VOICE_CHANNEL_REMOVE = 'VOICE_CHANNEL_REMOVE';
+const VOICE_CHANNEL_PATCH = 'VOICE_CHANNEL_PATCH';
+
+// Action Creators
+export function voiceChannelAll(channels) {
+  const channelsObject = channels.reduce((acc, channel) => {
+    acc[channel.name] = channel;
+    return acc;
+  }, {});
+
+  return {
+    type: VOICE_CHANNEL_ALL,
+    payload: channelsObject,
+  };
+}
+
+export function voiceChannelAdd(channels) {
+  const channelsObject = channels.reduce((acc, channel) => {
+    acc[channel.name] = channel;
+    return acc;
+  }, {});
+
+  return {
+    type: VOICE_CHANNEL_ADD,
+    payload: channelsObject,
+  };
+}
+
+export function voiceChannelRemove(channels) {
+  return {
+    type: VOICE_CHANNEL_REMOVE,
+    payload: channels,
+  };
+}
+
+export function voiceChannelPatch(channels) {
+  const channelsObject = channels.reduce((acc, channel) => {
+    acc[channel.name] = channel;
+    return acc;
+  }, {});
+
+  return {
+    type: VOICE_CHANNEL_PATCH,
+    payload: channelsObject,
+  };
+}
 
 function mergeObjects(first, second) {
   // remove null values
@@ -157,25 +217,74 @@ function mergeObjects(first, second) {
   };
 }
 
-// hacky, but easy reducer
-// eslint-disable-next-line
+// Reducer
+// eslint-disable-next-line default-param-last
 function appReducer(state = initialState, action) {
   switch (action.type) {
     case 'SET_STATE':
       return mergeObjects(state, action.stateUpdates);
-    case 'SET_LANG_MESSAGE':
-      if (action.payload.key === undefined || action.payload.value === undefined) {
-        // eslint-disable-next-line no-console
-        console.error('Invalid lang message', action.payload);
+
+    case 'SET_LANG_MESSAGES':
+      if (action.payload.messages === undefined) {
         return state;
       }
       return {
         ...state,
         lang: {
           ...state.lang,
-          [action.payload.key]: action.payload.value,
+          ...action.payload.messages,
         },
       };
+
+    case VOICE_CHANNEL_ALL:
+      return {
+        ...state,
+        voiceChannels: {
+          ...state.voiceChannels,
+          channels: action.payload,
+          activeChannelId: null,
+        },
+      };
+
+    case VOICE_CHANNEL_ADD:
+      return {
+        ...state,
+        voiceChannels: {
+          ...state.voiceChannels,
+          channels: {
+            ...state.voiceChannels?.channels,
+            ...action.payload,
+          },
+        },
+      };
+
+    case VOICE_CHANNEL_REMOVE: {
+      const currentChannels = state.voiceChannels?.channels || {};
+      const remainingChannels = Object.fromEntries(
+        Object.entries(currentChannels).filter(([channelName]) => !action.payload.some((channel) => channel.name === channelName)),
+      );
+
+      return {
+        ...state,
+        voiceChannels: {
+          ...state.voiceChannels,
+          channels: remainingChannels,
+        },
+      };
+    }
+
+    case VOICE_CHANNEL_PATCH:
+      return {
+        ...state,
+        voiceChannels: {
+          ...state.voiceChannels,
+          channels: {
+            ...state.voiceChannels?.channels,
+            ...action.payload,
+          },
+        },
+      };
+
     default:
       return state;
   }

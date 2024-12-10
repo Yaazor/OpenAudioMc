@@ -1,5 +1,6 @@
 package com.craftmend.openaudiomc.spigot.modules.commands.subcommands;
 
+import com.craftmend.openaudiomc.generic.commands.helpers.ParameterUtil;
 import com.craftmend.openaudiomc.generic.commands.interfaces.SubCommand;
 import com.craftmend.openaudiomc.generic.commands.objects.Argument;
 import com.craftmend.openaudiomc.generic.media.tabcomplete.MediaTabcompleteProvider;
@@ -22,7 +23,8 @@ public class RegionsSubCommand extends SubCommand {
                 new RegionDeleteSubCommand(openAudioMcSpigot),
                 new RegionTempSubCommand(openAudioMcSpigot),
                 new RegionEditSubCommand(openAudioMcSpigot),
-                new RegionListSubCommand(openAudioMcSpigot)
+                new RegionListSubCommand(openAudioMcSpigot),
+                new RegionForceUpdateSubCommand()
         );
 
         registerArguments(
@@ -49,7 +51,9 @@ public class RegionsSubCommand extends SubCommand {
                         "Change the fade of a region"),
 
                 new Argument("list",
-                        "List all regions at your current location and their properties")
+                        "List all regions at your current location and their properties"),
+
+                new Argument("forceupdate", "Force all regions to update their media cache")
         );
         this.openAudioMcSpigot = openAudioMcSpigot;
     }
@@ -66,10 +70,12 @@ public class RegionsSubCommand extends SubCommand {
             return;
         }
 
+        int argumentCount = ParameterUtil.countArgumentsWithoutParams(args);
+
         if ((args[0].equalsIgnoreCase("edit") || args[0].equalsIgnoreCase("gui"))) {
 
             // do we have any other args?
-            if (args.length > 1) {
+            if (argumentCount > 1) {
                 delegateTo("edit", sender, args);
                 return;
             }
@@ -84,23 +90,28 @@ public class RegionsSubCommand extends SubCommand {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("temp") && args.length == 4) {
+        if (args[0].equalsIgnoreCase("temp") && argumentCount == 4) {
             delegateTo("temp", sender, args);
             return;
         }
 
-        if (args[0].equalsIgnoreCase("create") && (args.length == 3 || args.length == 4)) {
+        if (args[0].equalsIgnoreCase("create") && argumentCount == 3 || argumentCount == 4) {
             delegateTo("create", sender, args);
             return;
         }
 
-        if (args[0].equalsIgnoreCase("delete") && args.length == 2) {
+        if (args[0].equalsIgnoreCase("delete") && argumentCount == 2) {
             delegateTo("delete", sender, args);
             return;
         }
 
         if (args[0].equalsIgnoreCase("list") && args.length == 1) {
             delegateTo("list", sender, args);
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("forceupdate") && args.length == 1) {
+            delegateTo("forceupdate", sender, args);
             return;
         }
 
