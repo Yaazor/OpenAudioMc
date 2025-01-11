@@ -48,10 +48,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
-import org.jetbrains.annotations.UnmodifiableView;
+import org.jetbrains.annotations.*;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -1511,6 +1508,21 @@ public class MockExecutor implements Player, CommandSender {
     @Override
     public void resetIdleDuration() {
 
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Set<Long> getSentChunkKeys() {
+        return Set.of();
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Set<Chunk> getSentChunks() {
+        return Set.of();
+    }
+
+    @Override
+    public boolean isChunkSent(long l) {
+        return false;
     }
 
     @Override
